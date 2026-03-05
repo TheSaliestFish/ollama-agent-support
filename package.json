@@ -1,0 +1,59 @@
+{
+  "name": "ollama-agent-support",
+  "displayName": "Ollama Agent Support",
+  "description": "Register local Ollama models into VS Code language model picker with tool-calling support",
+  "version": "0.0.4",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "AI"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "languageModelChatProviders": [
+      {
+        "vendor": "support",
+        "displayName": "Support"
+      }
+    ],
+    "commands": [
+      {
+        "command": "ollamaAgentSupport.refreshModels",
+        "title": "Ollama Agent Support: Refresh Models"
+      },
+      {
+        "command": "ollamaAgentSupport.selfTest",
+        "title": "Ollama Agent Support: Self Test"
+      }
+    ],
+    "configuration": {
+      "title": "Ollama Agent Support",
+      "properties": {
+        "ollamaAgentSupport.baseUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:11434",
+          "description": "Ollama API base URL"
+        },
+        "ollamaAgentSupport.modelAllowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Optional model allowlist. Empty means register all models from ollama list"
+        },
+        "ollamaAgentSupport.requestTimeoutMs": {
+          "type": "number",
+          "default": 120000,
+          "minimum": 1000,
+          "description": "Request timeout for Ollama chat API in milliseconds"
+        }
+      }
+    }
+  }
+}
