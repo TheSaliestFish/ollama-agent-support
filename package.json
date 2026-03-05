@@ -3,7 +3,11 @@
   "displayName": "Ollama Agent Support",
   "description": "Register local Ollama models into VS Code language model picker with tool-calling support",
   "version": "0.0.4",
-  "publisher": "local",
+  "publisher": "TheSaliestFish",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheSaliestFish/ollama-agent-support.git"
+  },
   "engines": {
     "vscode": "^1.100.0"
   },
