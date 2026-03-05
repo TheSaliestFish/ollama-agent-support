@@ -152,12 +152,25 @@ async function ollamaChat({ baseUrl, model, messages, tools, timeoutMs }) {
     let lastError = '';
     for (const attempt of attempts) {
       log(`POST ${attempt.url} model=${model}`);
+
+      let payload = '';
+      try {
+        payload = JSON.stringify(attempt.body);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        throw new Error(`Failed to serialize request body: ${message}`);
+      }
+
+      const payloadBytes = Buffer.byteLength(payload, 'utf8');
+      log(`Request payload bytes=${payloadBytes}`);
+
       const resp = await fetch(attempt.url, {
         method: 'POST',
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          'content-length': String(payloadBytes)
         },
-        body: JSON.stringify(attempt.body),
+        body: Buffer.from(payload, 'utf8'),
         signal: controller.signal
       });
 
@@ -168,10 +181,23 @@ async function ollamaChat({ baseUrl, model, messages, tools, timeoutMs }) {
         if (resp.status === 404) {
           continue;
         }
+
+        // Some Ollama builds are picky about /api/chat payload shapes and can return 400.
+        // Fall back to the OpenAI-compatible endpoint when possible.
+        if (resp.status === 400 && attempt.url.endsWith('/api/chat')) {
+          continue;
+        }
         throw new Error(`Ollama API error ${resp.status}: ${txt}`);
       }
 
-      const json = await resp.json();
+      let json;
+      try {
+        json = await resp.json();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        const txt = await resp.text().catch(() => '');
+        throw new Error(`Ollama response is not valid JSON: ${message}${txt ? `; body=${txt}` : ''}`);
+      }
       return attempt.parse(json);
     }
 
