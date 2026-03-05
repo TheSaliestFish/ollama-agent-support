@@ -1,6 +1,6 @@
 {
   "name": "ollama-agent-support",
-  "displayName": "Ollama Agent Support",
+  "displayName": "Ollama Agent Support for Copilot",
   "description": "Register local Ollama models into VS Code language model picker with tool-calling support",
   "version": "0.0.4",
   "publisher": "TheSaliestFish",
